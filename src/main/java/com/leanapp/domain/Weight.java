@@ -26,6 +26,9 @@ public class Weight {
     @Column(name = "date")
     private LocalDate date;
 
+    @Column(name = "comment")
+    private String comment;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -34,5 +37,18 @@ public class Weight {
         this.weight = weight;
         this.date = date;
         this.user = user;
+    }
+
+    public Weight(Long weight, LocalDate date, String comment, User user) {
+        this.weight = weight;
+        this.date = date;
+        this.comment = comment;
+        this.user = user;
+    }
+
+    public Weight(Long weight, LocalDate date, String comment) {
+        this.weight = weight;
+        this.date = date;
+        this.comment = comment;
     }
 }

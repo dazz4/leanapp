@@ -1,7 +1,7 @@
 package com.leanapp.service;
 
-import com.leanapp.domain.User;
 import com.leanapp.domain.Measurements;
+import com.leanapp.domain.User;
 import com.leanapp.domain.exceptions.UserNotFoundException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,7 +11,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)

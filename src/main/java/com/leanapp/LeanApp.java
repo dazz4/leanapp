@@ -5,11 +5,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import lombok.Getter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
 @SpringBootApplication
+@Getter
 public class LeanApp extends Application {
 
     private ConfigurableApplicationContext springContext;
@@ -18,9 +20,10 @@ public class LeanApp extends Application {
     @Override
     public void init() throws Exception {
         springContext = SpringApplication.run(LeanApp.class);
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ui.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("RootLayout.fxml"));
         fxmlLoader.setControllerFactory(springContext::getBean);
         root = fxmlLoader.load();
+
     }
 
     @Override
