@@ -17,10 +17,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
@@ -29,40 +27,72 @@ import java.util.ResourceBundle;
 @Getter
 public class WeightController implements Initializable {
 
-    @Autowired
-    private LeanApp leanApp;
-
+    private final WeightService weightService;
     @FXML
     private TableView<Weight> weightlog;
-
     @FXML
     private TableColumn<Weight, SimpleLongProperty> col_id;
-
     @FXML
     private TableColumn<Weight, SimpleLongProperty> col_weight;
-
     @FXML
     private TableColumn<Weight, SimpleStringProperty> col_date;
-
     @FXML
     private TableColumn<Weight, SimpleStringProperty> col_comment;
-
     @FXML
     private DatePicker weightDate;
-
     @FXML
     private TextField textFieldWeight;
-
     @FXML
     private TextField textFieldComment;
 
-    private final WeightService weightService;
+    private ObservableList<Weight> obList = FXCollections.observableArrayList();
 
-    public WeightController(WeightService weightService) {
+    public WeightController(WeightService weightService, LeanApp leanApp) {
         this.weightService = weightService;
     }
 
-    private ObservableList<Weight> obList = FXCollections.observableArrayList();
+    @FXML
+    void addWeight(ActionEvent event) throws WeightLogNotFoundException {
+
+        Weight weight = new Weight(
+                Double.valueOf(textFieldWeight.getText()),
+                weightDate.getValue(),
+                textFieldComment.getText());
+
+        weightService.saveOrUpdate(weight);
+
+        weightlog.getItems().add(weightService.getWeight(weight.getId())
+                .orElseThrow(WeightLogNotFoundException::new));
+    }
+
+    @FXML
+    public void deleteWeight(ActionEvent actionEvent) {
+
+        Weight selectedItem = weightlog.getSelectionModel().getSelectedItem();
+
+        weightService.delete(selectedItem.getId());
+        weightlog.getItems().remove(selectedItem);
+
+    }
+
+    @FXML
+    public void updateWeight(ActionEvent actionEvent) {
+
+        Weight selectedItem = weightlog.getSelectionModel().getSelectedItem();
+
+        Weight updateWeight = new Weight(
+                selectedItem.getId(),
+                Double.valueOf(textFieldWeight.getText()),
+                weightDate.getValue(),
+                textFieldComment.getText(),
+                null);
+
+        int index = weightlog.getSelectionModel().selectedIndexProperty().get();
+
+        weightService.saveOrUpdate(updateWeight);
+        obList.set(index, updateWeight);
+
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -76,54 +106,13 @@ public class WeightController implements Initializable {
         weightlog.setItems(obList);
 
         weightlog.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
+
             if (newValue != null) {
                 textFieldWeight.setText(observable.getValue().getWeight().toString());
                 weightDate.setValue(LocalDate.parse(observable.getValue().getDate().toString()));
                 textFieldComment.setText(observable.getValue().getComment());
             }
+
         }));
-    }
-
-    @FXML
-    void addWeight(ActionEvent event) throws WeightLogNotFoundException {
-        Weight weight = new Weight(
-                Long.parseLong(textFieldWeight.getText()),
-                weightDate.getValue(),
-                textFieldComment.getText());
-
-        weightService.saveOrUpdate(weight);
-
-        weightlog.getItems().add(weightService.getWeight(weight.getId())
-                .orElseThrow(WeightLogNotFoundException::new));
-    }
-
-    @FXML
-    public void buttonDelete(ActionEvent actionEvent) {
-        Weight selectedItem = weightlog.getSelectionModel().getSelectedItem();
-
-        weightService.delete(selectedItem.getId());
-        weightlog.getItems().remove(selectedItem);
-    }
-
-    public void buttonEdit(ActionEvent actionEvent) throws IOException {
-
-    }
-
-    @FXML
-    public void buttonUpdate(ActionEvent actionEvent) {
-        Weight selectedItem = weightlog.getSelectionModel().getSelectedItem();
-
-        Weight updateWeight = new Weight(
-                selectedItem.getId(),
-                Long.parseLong(textFieldWeight.getText()),
-                weightDate.getValue(),
-                textFieldComment.getText(),
-                null);
-
-        weightlog.getSelectionModel().selectedItemProperty().get();
-        int index = weightlog.getSelectionModel().selectedIndexProperty().get();
-
-        weightService.saveOrUpdate(updateWeight);
-        obList.set(index, updateWeight);
     }
 }

@@ -21,7 +21,7 @@ public class Weight {
     private Long id;
 
     @Column(name = "weight")
-    private Long weight;
+    private Double weight;
 
     @Column(name = "date")
     private LocalDate date;
@@ -30,23 +30,23 @@ public class Weight {
     private String comment;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "profile_id")
+    private Profile profile;
 
-    public Weight(Long weight, LocalDate date, User user) {
+    public Weight(Double weight, LocalDate date, Profile profile) {
         this.weight = weight;
         this.date = date;
-        this.user = user;
+        this.profile = profile;
     }
 
-    public Weight(Long weight, LocalDate date, String comment, User user) {
+    public Weight(Double weight, LocalDate date, String comment, Profile profile) {
         this.weight = weight;
         this.date = date;
         this.comment = comment;
-        this.user = user;
+        this.profile = profile;
     }
 
-    public Weight(Long weight, LocalDate date, String comment) {
+    public Weight(Double weight, LocalDate date, String comment) {
         this.weight = weight;
         this.date = date;
         this.comment = comment;

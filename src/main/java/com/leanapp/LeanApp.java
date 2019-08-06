@@ -23,13 +23,13 @@ public class LeanApp extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("RootLayout.fxml"));
         fxmlLoader.setControllerFactory(springContext::getBean);
         root = fxmlLoader.load();
-
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         Scene scene = new Scene(root, 600, 400);
         primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
         primaryStage.show();
     }
 

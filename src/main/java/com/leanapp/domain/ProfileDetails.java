@@ -12,9 +12,12 @@ import javax.persistence.Embeddable;
 @Getter
 @Setter
 @Embeddable
-public class Measurements {
-    private Long currentWeight;
+public class ProfileDetails {
+    private Double currentWeight;
     private Long age;
-    private Long height;
+    private Double height;
     private String gender;
+    private Long bodyFat;
+    private Long muscleMass;
+    private Long activity;
 }

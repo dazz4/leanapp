@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
@@ -14,7 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-public class User {
+public class Profile {
 
     @Id
     @GeneratedValue
@@ -25,13 +24,17 @@ public class User {
     private String name;
 
     @Embedded
-    private Measurements measurements;
+    private ProfileDetails profileDetails;
 
-    @OneToMany(mappedBy = "user")
-    private List<Weight> weights = new ArrayList<>();
+    @OneToMany(
+            targetEntity = Weight.class,
+            mappedBy = "profile",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER)
+    private List<Weight> weights;
 
-    public User(String name, Measurements measurements) {
+    public Profile(String name, ProfileDetails profileDetails) {
         this.name = name;
-        this.measurements = measurements;
+        this.profileDetails = profileDetails;
     }
 }
