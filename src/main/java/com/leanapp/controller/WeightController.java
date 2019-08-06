@@ -2,7 +2,9 @@ package com.leanapp.controller;
 
 import com.leanapp.LeanApp;
 import com.leanapp.domain.Weight;
+import com.leanapp.domain.exceptions.ProfileNotFoundException;
 import com.leanapp.domain.exceptions.WeightLogNotFoundException;
+import com.leanapp.service.ProfileService;
 import com.leanapp.service.WeightService;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -11,10 +13,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
@@ -27,7 +26,10 @@ import java.util.ResourceBundle;
 @Getter
 public class WeightController implements Initializable {
 
+    private final ProfileService profileService;
     private final WeightService weightService;
+    private ObservableList<Weight> obList = FXCollections.observableArrayList();
+
     @FXML
     private TableView<Weight> weightlog;
     @FXML
@@ -44,20 +46,27 @@ public class WeightController implements Initializable {
     private TextField textFieldWeight;
     @FXML
     private TextField textFieldComment;
+    @FXML
+    private Button addButton;
+    @FXML
+    private Button updateButton;
+    @FXML
+    private Button deleteButton;
 
-    private ObservableList<Weight> obList = FXCollections.observableArrayList();
-
-    public WeightController(WeightService weightService, LeanApp leanApp) {
+    public WeightController(WeightService weightService, LeanApp leanApp, ProfileService profileService) {
         this.weightService = weightService;
+        this.profileService = profileService;
     }
 
     @FXML
-    void addWeight(ActionEvent event) throws WeightLogNotFoundException {
+    void addWeight(ActionEvent event) throws WeightLogNotFoundException, ProfileNotFoundException {
 
         Weight weight = new Weight(
                 Double.valueOf(textFieldWeight.getText()),
                 weightDate.getValue(),
-                textFieldComment.getText());
+                textFieldComment.getText(),
+                profileService.getProfile(1L)
+                        .orElseThrow(ProfileNotFoundException::new));
 
         weightService.saveOrUpdate(weight);
 
@@ -96,6 +105,9 @@ public class WeightController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+
+
         obList.addAll(weightService.getAllWeights());
 
         col_id.setCellValueFactory(new PropertyValueFactory<>("id"));

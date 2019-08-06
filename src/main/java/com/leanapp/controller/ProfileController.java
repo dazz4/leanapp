@@ -1,16 +1,18 @@
 package com.leanapp.controller;
 
-import com.leanapp.domain.ProfileDetails;
 import com.leanapp.domain.Profile;
+import com.leanapp.domain.ProfileDetails;
 import com.leanapp.domain.exceptions.ProfileNotFoundException;
 import com.leanapp.service.ProfileService;
 import com.leanapp.service.WeightService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import lombok.Getter;
+import org.jboss.jandex.Main;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +28,9 @@ public class ProfileController implements Initializable {
 
     @Autowired
     private WeightService weightService;
+
+    @Autowired
+    protected MainController mainController;
 
     private Profile profile;
 
@@ -89,6 +94,10 @@ public class ProfileController implements Initializable {
             profile.setName(profileName);
             profile.setProfileDetails(details);
             profileService.saveOrUpdate(profile);
+        }
+
+        if(mainController.getWeightLogTab().isDisable()){
+            mainController.getWeightLogTab().setDisable(false);
         }
     }
 

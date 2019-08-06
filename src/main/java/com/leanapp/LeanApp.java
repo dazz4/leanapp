@@ -17,6 +17,10 @@ public class LeanApp extends Application {
     private ConfigurableApplicationContext springContext;
     private Parent root;
 
+    public static void main(String[] args) {
+        launch(LeanApp.class, args);
+    }
+
     @Override
     public void init() throws Exception {
         springContext = SpringApplication.run(LeanApp.class);
@@ -36,9 +40,5 @@ public class LeanApp extends Application {
     @Override
     public void stop() throws Exception {
         springContext.stop();
-    }
-
-    public static void main(String[] args) {
-        launch(LeanApp.class, args);
     }
 }
