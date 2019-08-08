@@ -2,6 +2,7 @@ package com.leanapp.controller;
 
 import com.leanapp.domain.Profile;
 import com.leanapp.domain.ProfileDetails;
+import com.leanapp.domain.Weight;
 import com.leanapp.domain.exceptions.ProfileNotFoundException;
 import com.leanapp.service.ProfileService;
 import com.leanapp.service.WeightService;
@@ -17,64 +18,55 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ResourceBundle;
 
 @Component
 @Getter
 public class ProfileController implements Initializable {
 
+    private Profile profile;
+    private Weight weight;
+
     @Autowired
     private ProfileService profileService;
-
     @Autowired
     private WeightService weightService;
-
     @Autowired
-    protected MainController mainController;
-
-    private Profile profile;
+    private MainController mainController;
+    @Autowired
+    private WeightController weightController;
 
     @FXML
     private TextField textFieldProfile;
-
     @FXML
     private TextField textFieldWeight;
-
     @FXML
     private TextField textFieldHeight;
-
     @FXML
     private TextField textFieldGender;
-
     @FXML
     private TextField textFieldAge;
-
     @FXML
     private TextField textFieldMuscleMass;
-
     @FXML
     private TextField textFieldBodyFat;
-
     @FXML
     private TextField textFieldActivity;
-
     @FXML
     private Text textMaintenance;
-
     @FXML
     private Text textDeficit;
-
     @FXML
     private Text textSurplus;
-
     @FXML
     private Text textAverage;
-
     @FXML
     private Text textTotal;
 
     @FXML
     void saveProfile(ActionEvent event) {
+
         String profileName = textFieldProfile.getText();
         Double currentWeight = Double.valueOf(textFieldWeight.getText());
         Long age = Long.valueOf(textFieldAge.getText());
@@ -87,13 +79,20 @@ public class ProfileController implements Initializable {
         ProfileDetails details = new ProfileDetails(currentWeight, age, height, gender, bodyFat, muscleMass, activity);
 
         if (profileService.getAllProfiles().size() == 0) {
+
             profile = new Profile(profileName, details);
             profileService.saveOrUpdate(profile);
+            weight = new Weight(currentWeight, LocalDate.now(), "", profile);
+            weightService.saveOrUpdate(weight);
+            weightController.loadData();
+
         } else {
+
             profile = profileService.getAllProfiles().get(0);
             profile.setName(profileName);
             profile.setProfileDetails(details);
             profileService.saveOrUpdate(profile);
+
         }
 
         if(mainController.getWeightLogTab().isDisable()){

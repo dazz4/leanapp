@@ -28,7 +28,7 @@ public class WeightController implements Initializable {
 
     private final ProfileService profileService;
     private final WeightService weightService;
-    private ObservableList<Weight> obList = FXCollections.observableArrayList();
+    private ObservableList<Weight> weightList = FXCollections.observableArrayList();
 
     @FXML
     private TableView<Weight> weightlog;
@@ -69,16 +69,15 @@ public class WeightController implements Initializable {
                         .orElseThrow(ProfileNotFoundException::new));
 
         weightService.saveOrUpdate(weight);
-
         weightlog.getItems().add(weightService.getWeight(weight.getId())
                 .orElseThrow(WeightLogNotFoundException::new));
+
     }
 
     @FXML
     public void deleteWeight(ActionEvent actionEvent) {
 
         Weight selectedItem = weightlog.getSelectionModel().getSelectedItem();
-
         weightService.delete(selectedItem.getId());
         weightlog.getItems().remove(selectedItem);
 
@@ -88,7 +87,6 @@ public class WeightController implements Initializable {
     public void updateWeight(ActionEvent actionEvent) {
 
         Weight selectedItem = weightlog.getSelectionModel().getSelectedItem();
-
         Weight updateWeight = new Weight(
                 selectedItem.getId(),
                 Double.valueOf(textFieldWeight.getText()),
@@ -97,34 +95,32 @@ public class WeightController implements Initializable {
                 null);
 
         int index = weightlog.getSelectionModel().selectedIndexProperty().get();
-
         weightService.saveOrUpdate(updateWeight);
-        obList.set(index, updateWeight);
+        weightList.set(index, updateWeight);
+    }
+
+    public void loadData() {
+
+        weightList.addAll(weightService.getAllWeights());
+        col_id.setCellValueFactory(new PropertyValueFactory<>("id"));
+        col_weight.setCellValueFactory(new PropertyValueFactory<>("weight"));
+        col_date.setCellValueFactory(new PropertyValueFactory<>("date"));
+        col_comment.setCellValueFactory(new PropertyValueFactory<>("comment"));
+        weightlog.setItems(weightList);
 
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-
-
-        obList.addAll(weightService.getAllWeights());
-
-        col_id.setCellValueFactory(new PropertyValueFactory<>("id"));
-        col_weight.setCellValueFactory(new PropertyValueFactory<>("weight"));
-        col_date.setCellValueFactory(new PropertyValueFactory<>("date"));
-        col_comment.setCellValueFactory(new PropertyValueFactory<>("comment"));
-
-        weightlog.setItems(obList);
+        loadData();
 
         weightlog.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
-
             if (newValue != null) {
                 textFieldWeight.setText(observable.getValue().getWeight().toString());
                 weightDate.setValue(LocalDate.parse(observable.getValue().getDate().toString()));
                 textFieldComment.setText(observable.getValue().getComment());
             }
-
         }));
     }
 }
